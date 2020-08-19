@@ -1,0 +1,10 @@
+settings.env
+docker-compose.yml
+
+#database
+/data/db/*
+!/data/db/.gitkeep
+
+#telegram
+/data/telegram/*
+!/data/telegram/Dockerfile
