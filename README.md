@@ -4,17 +4,19 @@ This is a docker container for the [strichliste](https://www.strichliste.org/) b
 
 ## Usage
 
-- Clone this repository.
-- Create settings.env from template and change values.
-- Create docker-compose.yml from template and change for your needs.
-- Setup initial database.
+- Clone this repository
+- Create settings.env from template and change values for your needs
+- Create docker-compose.yml from template and change for your needs
+- Setup initial database
 
 ### Setup initial database
 After configuring the environment variables you can start the container and create the inital database schema with the following command:
 ```
-docker exec strichliste-app php bin/console doctrine:schema:create
+docker exec --user www-data strichliste-app php bin/console doctrine:schema:create
 ```
-(you might need to wait a bit for the database to start up, the command will tell you if it succeeded or not)
+- you might need to wait a bit for the database to start up, the command will tell you if it succeeded or not
+- don't forget to run the command on the correct container if you changed the container name
+- you must run the command as `www-data`, otherwise file permissions from symphony framework will be wrong
 
 ## Templates
 Example settings.env configuration:
