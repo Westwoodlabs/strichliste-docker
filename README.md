@@ -12,7 +12,7 @@ This is a docker container for the [strichliste](https://www.strichliste.org/) b
 ### Setup initial database
 After configuring the environment variables you can start the container and create the inital database schema with the following command:
 ```
-./../bin/console doctrine:schema:create
+docker exec strichliste-app php bin/console doctrine:schema:create
 ```
 (you might need to wait a bit for the database to start up, the command will tell you if it succeeded or not)
 
@@ -20,34 +20,35 @@ After configuring the environment variables you can start the container and crea
 Example settings.env configuration:
 
 ```env
-DB_HOST=db
+DB_HOST=strichliste-db
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=strichliste
 MYSQL_USER=strichliste
 MYSQL_PASSWORD=
-DATABASE_URL=mysql://strichliste:<changeme>@db/strichliste
+DATABASE_URL=mysql://strichliste:<changeme>@strichliste-db/strichliste
 ```
 
 Example docker-compose configuration:
 
 ```yml
 services:
-  strichliste:
+  app:
+    container_name: strichliste-app
     image: ghcr.io/westwoodlabs/strichliste:latest
     restart: unless-stopped
     env_file:
       - settings.env
     networks:
       - internal
-    port:
+    ports:
       - 80:80
     volumes:
-      - ./data/strichliste/strichliste.yaml:/var/www/html/config/strichliste.yaml
-    
+      - ./data/strichliste/strichliste.yml:/var/www/html/config/strichliste.yaml
     depends_on:
       - db
 
   db:
+    container_name: strichliste-db
     image: mariadb:11.4
     restart: unless-stopped
     env_file:
