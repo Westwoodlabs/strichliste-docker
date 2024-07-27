@@ -1,12 +1,12 @@
-# strichliste-docker - A Strichliste Docker Container
+# strichliste-docker - Strichliste Docker Bundle
 
-This is a docker container for the [strichliste](https://www.strichliste.org/) using the [strichliste frontend and backend bundle](https://github.com/strichliste/strichliste), a MariaDB database and a the Telegram Bot [strichliste-telegram](https://github.com/Westwoodlabs/strichliste-telegram).
+This is a docker container for the [strichliste](https://www.strichliste.org/) bundeling the [frontend](https://github.com/Westwoodlabs/strichliste-web-frontend) and [backend](https://github.com/Westwoodlabs/strichliste-backend), a MariaDB database and a the Telegram Bot [strichliste-telegram](https://github.com/Westwoodlabs/strichliste-telegram).
 
 ## Usage
 
 - Clone this repository.
 - Create settings.env from template and change values.
-- Create docker-compose.yml from template and change for your needs (remove treafik for example).
+- Create docker-compose.yml from template and change for your needs.
 - Setup initial database.
 
 ### Setup initial database
@@ -31,33 +31,24 @@ DATABASE_URL=mysql://strichliste:<changeme>@db/strichliste
 Example docker-compose configuration:
 
 ```yml
-version: "3.8"
-
 services:
-
-  web:
-    build: ./data/web
+  strichliste:
+    image: ghcr.io/westwoodlabs/strichliste:latest
+    restart: unless-stopped
     env_file:
       - settings.env
     networks:
-      - reverse-proxy
       - internal
+    port:
+      - 80:80
     volumes:
-      - ./data/web/services.yaml:/var/www/html/config/services.yaml
-      - ./data/web/strichliste.yaml:/var/www/html/config/strichliste.yaml
-      - ./data/web/doctrine.yaml:/var/www/html/config/packages/doctrine.yaml
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.strichliste.rule=Host(`myhostname.fqdn.local`)"
-      - "traefik.http.routers.strichliste.entryPoints=https"
-      - "traefik.http.routers.strichliste.tls=true"
-      - "traefik.http.services.strichliste.loadbalancer.server.scheme=http"
-      - "traefik.http.services.strichliste.loadbalancer.server.port=80"
-    restart: unless-stopped
-    depends_on: 
+      - ./data/strichliste/strichliste.yaml:/var/www/html/config/strichliste.yaml
+    
+    depends_on:
       - db
+
   db:
-    image: mariadb
+    image: mariadb:11.4
     restart: unless-stopped
     env_file:
       - settings.env
@@ -67,7 +58,7 @@ services:
       - internal
 
   telegram:
-    build: ./data/telegram
+    image: ghcr.io/westwoodlabs/strichliste-telegram:latest
     restart: unless-stopped
     volumes:
       - ./data/telegram/authorizedUsers.json:/usr/src/app/authorizedUsers.json
@@ -76,8 +67,6 @@ services:
       - internal
 
 networks:
-  reverse-proxy:
-    external: true
   internal:
     external: false
 ```
