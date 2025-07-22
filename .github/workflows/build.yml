@@ -38,6 +38,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend
+          include-hidden-files: true
           path: build
 
   build-backend:
@@ -69,6 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend
+          include-hidden-files: true
           path: ./
     
   build-image:
